@@ -1,22 +1,41 @@
 
 // Utility function to check for empty objects
+Object.isEmpty = function () {
+	return (
+		Object.keys(this).length === 0 
+		&& this.constructor === Object)
+};
 
-Object.defineProperty(Object.prototype, 'isEmpty', {
-	value: function () {
-		return (Object.keys(this).length === 0 && this.constructor === Object)
-	}
-});
+
+// Creates a two-dimensional array of every possible combination of key references
+Object.keyGlob = function(obj, base = []) {
+
+    const tumbleweed = [];
+
+    for (key in obj) 
+    {
+        tumbleweed.push([...base, key]);
+        
+        if ( typeof obj[key] === 'object' && obj[key] !== null ) 
+        {
+            tumbleweed.push(...Object.keyGlob(obj[key], [...base, key]));
+        }
+    } 
+    
+    return tumbleweed;
+}
 
 
-// Removes keys with empty values from passed object
-Object.prototype.refine = function () {
+
+// Removes keys with falsey values from passed object
+Object.refine = function(obj) {
 
 	let refined = {};
 
-	Object.keys(this).forEach((prop) => {
+	Object.keys(obj).forEach((prop) => {
 
-		if (!['', false, undefined, null].includes(this[prop])) {
-			refined[prop] = this[prop];
+		if (!['', false, undefined, null].includes(obj[prop])) {
+			refined[prop] = obj[prop];
 		}
 
 		return;
